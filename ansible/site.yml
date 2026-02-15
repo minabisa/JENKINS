@@ -1,0 +1,24 @@
+- name: Install Docker and run Nginx container on App Server
+  hosts: app
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start and enable Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Run Nginx container (idempotent simple way)
+      shell: |
+        docker rm -f nginx || true
+        docker run -d --name nginx -p 80:80 nginx:latest
